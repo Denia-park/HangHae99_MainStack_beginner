@@ -188,3 +188,7 @@ input[type=submit] {
     border: 1px solid transparent;
     border-radius: .25rem;
 }
+
+.none {
+    display: none;
+}
