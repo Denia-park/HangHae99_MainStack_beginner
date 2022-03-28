@@ -45,7 +45,7 @@ public class UserController {
         ErrCodeObject errCodeObject = getSignupErrCode(requestDto);
 
         if(errCodeObject.getErrCode() == 0) {
-            userService.registerUser(requestDto);
+//            userService.registerUser(requestDto);
             return "login";
         }
         model.addAttribute("errCode",errCodeObject.getErrCode());
