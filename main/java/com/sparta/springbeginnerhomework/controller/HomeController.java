@@ -15,7 +15,7 @@ public class HomeController {
         }
         else{
             model.addAttribute("username", userDetails.getUsername());
-            model.addAttribute("user_check", true);
+            model.addAttribute("userLoginCheck", true);
         }
 
         return "index";

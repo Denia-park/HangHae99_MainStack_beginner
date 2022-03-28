@@ -384,16 +384,23 @@
     <h1> <b>자유게시판</b> </h1>
 </div>
 
+<div th:if="${userLoginCheck}" style="color: white; font-size: 20pt; text-align:right;">
+    <span th:text="${username}"></span> 님 안녕하세요.
+</div>
+
 <div class="button_wrapper">
-    <div class="signup_button">
+
+    <div th:if="${userLoginCheck}" class="login_button">
+        <button type="button"  onclick="location.href='/user/logout'" class="btn btn-secondary">로그아웃</button>
+    </div>
+    <div th:unless="${userLoginCheck}" class="write_button">
         <button type="button"  onclick="location.href='/user/signup'" class="btn btn-secondary">회원가입</button>
+        <button type="button"  onclick="location.href='/user/login'" class="btn btn-secondary" style="margin-left: 15px;">로그인</button>
     </div>
-    <div class="login_button">
-        <button type="button"  onclick="location.href='/user/login'" class="btn btn-secondary">로그인</button>
+
+    <div th:if="${userLoginCheck}" class="write_button">
+        <button type="button"  onclick="enter_board_write()" class="btn btn-secondary">글 쓰기</button>
     </div>
-<!--    <div class="write_button">-->
-<!--        <button type="button"  onclick="enter_board_write()" class="btn btn-secondary">글 쓰기</button>-->
-<!--    </div>-->
 </div>
 
 
