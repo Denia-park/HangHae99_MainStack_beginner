@@ -1,4 +1,4 @@
-package com.sparta.springbeginnerhomework.models;
+package com.sparta.springbeginnerhomework.dto;
 
 import lombok.Getter;
 

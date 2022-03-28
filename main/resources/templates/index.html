@@ -39,20 +39,24 @@
             /*border : 1px solid black;*/
         }
 
-        /*td:hover{*/
-        /*    color: green;*/
-        /*    cursor: pointer;*/
-        /*}*/
-
         .boardTitle >b :hover{
             color: green;
             cursor: pointer;
         }
 
-        .write_button{
-            float: right;
-            margin-right: 20px;
-            margin-bottom: 20px;
+        .button_wrapper{
+            display: flex;
+            justify-content: right;
+            align-items: center;
+
+            margin: 15px;
+        }
+
+        .button_wrapper .login_button{
+            margin-left: 15px;
+        }
+        .button_wrapper .write_button{
+            margin-left: 15px;
         }
 
         /*팝업창의 버튼임*/
@@ -210,7 +214,6 @@
     </style>
 
     <script>
-
         $(document).ready(function () {
             // id 가 query 인 녀석 위에서 엔터를 누르면 execSearch() 함수를 실행하라는 뜻입니다.
             $('#close_write').on('click', function () {
@@ -229,14 +232,16 @@
                 type: 'GET',
                 url: '/api/freetables',
                 success: function (response) {
-                    for (let i = 0; i < response.length; i++) {
-                        let tableMsg = response[i];
-                        let id = tableMsg['id'];
-                        let title = tableMsg['title'];
-                        let writer = tableMsg['writer'];
-                        let createdAt = convertUTCTimeToSeoulTime(tableMsg['createdAt']);
-                        addTableHTML(id, title ,writer, createdAt);
-                    }
+                    console.log(response);
+                    //타임리프를 이용해서 게시판을 꾸며야됨 !!.
+                    // for (let i = 0; i < response.length; i++) {
+                    //     let tableMsg = response[i];
+                    //     let id = tableMsg['id'];
+                    //     let title = tableMsg['title'];
+                    //     let writer = tableMsg['writer'];
+                    //     let createdAt = convertUTCTimeToSeoulTime(tableMsg['createdAt']);
+                    //     addTableHTML(id, title ,writer, createdAt);
+                    // }
                 }
             })
         }
@@ -379,9 +384,18 @@
     <h1> <b>자유게시판</b> </h1>
 </div>
 
-<div class="write_button">
-    <button type="button"  onclick="enter_board_write()" class="btn btn-secondary">글 쓰기</button>
+<div class="button_wrapper">
+    <div class="signup_button">
+        <button type="button"  onclick="location.href='/user/signup'" class="btn btn-secondary">회원가입</button>
+    </div>
+    <div class="login_button">
+        <button type="button"  onclick="location.href='/user/login'" class="btn btn-secondary">로그인</button>
+    </div>
+<!--    <div class="write_button">-->
+<!--        <button type="button"  onclick="enter_board_write()" class="btn btn-secondary">글 쓰기</button>-->
+<!--    </div>-->
 </div>
+
 
 <table class="table table-dark table-hover">
     <thead class="tablehead">

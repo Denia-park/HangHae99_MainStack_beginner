@@ -1,5 +1,7 @@
-package com.sparta.springbeginnerhomework.models;
+package com.sparta.springbeginnerhomework.model;
 
+import com.sparta.springbeginnerhomework.dto.FreeTableRequestDto;
+import com.sparta.springbeginnerhomework.modelInterface.Timestamped;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

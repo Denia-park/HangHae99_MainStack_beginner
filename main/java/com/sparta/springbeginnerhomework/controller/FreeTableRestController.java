@@ -1,8 +1,8 @@
 package com.sparta.springbeginnerhomework.controller;
 
-import com.sparta.springbeginnerhomework.models.FreeTable;
-import com.sparta.springbeginnerhomework.models.FreeTableRepository;
-import com.sparta.springbeginnerhomework.models.FreeTableRequestDto;
+import com.sparta.springbeginnerhomework.model.FreeTable;
+import com.sparta.springbeginnerhomework.repository.FreeTableRepository;
+import com.sparta.springbeginnerhomework.dto.FreeTableRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
