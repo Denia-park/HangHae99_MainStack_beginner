@@ -85,7 +85,6 @@
         }
 
         function enter_board_view(id) {
-            $('#container_view_warp').empty();
             $.ajax({
                 type: 'GET',
                 url: `/api/freetables/${id}`,
@@ -101,6 +100,7 @@
 
                     $('#close_view').on('click', function () {
                         $('#container_view').removeClass('active');
+                        $('#container_view_warp').empty();
                     })
                 }
             })
