@@ -31,6 +31,19 @@
             // showProduct();
         })
 
+        // 외부영역 클릭 시 팝업 닫기
+        $(document).mouseup(function (e){
+            var LayerPopupView = $(".popup-container_view");
+            var LayerPopupWrite = $(".popup-container_write");
+            if(LayerPopupView.has(e.target).length === 0){
+                $('#container_view').removeClass('active');
+                $('#container_view_warp').empty();
+            }
+            if(LayerPopupWrite.has(e.target).length === 0){
+                $('#container_write').removeClass('active');
+            }
+        });
+
         const href = location.href;
         const queryString = href.substring(href.indexOf("?")+1)
 
