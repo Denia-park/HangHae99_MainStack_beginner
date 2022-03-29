@@ -18,21 +18,7 @@ import java.util.List;
 public class ReplyController {
 
     private final ReplyRepository replyRepository;
-
-    @GetMapping("/api/replies/{boardNum}")
-    public List<Reply> getReplies(@PathVariable Long boardNum){
-        return replyRepository.findALLByBoardNumOrderByCreatedAtDesc(boardNum);
-    }
-
-//    @GetMapping("/api/freetables/{id}")
-//    public FreeTable getTable(@PathVariable Long id){
-//        FreeTable freeTable = freeTableRepository.findById(id).orElseThrow(
-//                () -> new IllegalArgumentException("아이디가 존재하지 않습니다.")
-//        );
-//
-//        return freeTable;
-//    }
-
+    
     @PostMapping("/api/replies/{boardNum}")
     public Reply postReply(@PathVariable Long boardNum, @RequestBody ReplyRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails){
         if(userDetails != null){
