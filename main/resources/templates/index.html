@@ -108,6 +108,7 @@
 
         function addTableViewHTML(id,title, username, content ,createdAt) {
             // 1. HTML 태그를 만듭니다.
+            let toStingUserName = "'"+username+"'";
             let tempHtml = `
                             <div id="container_view" class="popup-container_view">
                                 <div class="popup_view">
