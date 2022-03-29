@@ -13,7 +13,6 @@
             integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
             crossorigin="anonymous"></script>
     <link rel="stylesheet" href="css/style.css">
-<!--    <script src="basic.js"></script>-->
 
     <title>자유게시판</title>
     <meta property="og:title" content="자유게시판" />
@@ -30,6 +29,14 @@
             getMessages();
             // showProduct();
         })
+
+        const href = location.href;
+        const queryString = href.substring(href.indexOf("?")+1)
+
+        if (queryString === 'loginUserDoNotEnterErr') {
+            alert("이미 로그인이 되어있습니다.");
+            window.location.href = '/';
+        }
 
         function getMessages() {
             // 1. 기존 내용을 지웁니다.
@@ -136,7 +143,11 @@
             $('#container_view_warp').append(tempHtml);
         }
 
-        function enter_board_write(){
+    </script>
+
+    <script th:if="${userLoginCheck}" th:inline="javascript">
+
+    function enter_board_write(){
             if([[${userLoginCheck}]])
                 $('#container_write').addClass('active');
             else
@@ -188,13 +199,6 @@
             return true;
         }
 
-        const href = location.href;
-        const queryString = href.substring(href.indexOf("?")+1)
-
-        if (queryString === 'loginUserDoNotEnterErr') {
-            alert("이미 로그인이 되어있습니다.");
-            window.location.href = '/';
-        }
     </script>
 
 </head>
