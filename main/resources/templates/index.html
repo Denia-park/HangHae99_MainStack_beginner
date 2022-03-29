@@ -117,6 +117,10 @@
                 window.location.href = '/user/login';
             }
 
+            if(!isValidContents(replyContent)){
+                return;
+            }
+
             let data = {'boardNum' : replyBoardNum,'username': replyUsername ,'replyContent': replyContent};
 
             postReplies(data);
@@ -152,39 +156,38 @@
                                         <b style="font-size: 17pt">내용</b>
                                         <p>${content}</p>
                                     </div>
-
                                     <div class="form-floating">
                                         <textarea class="form-control" placeholder=" " id="comment"
-                                                  style="width: 25rem; height: 100px; margin-bottom: 10px;"></textarea>
+                                                style="width: 25rem; height: 100px; margin-bottom: 10px;"></textarea>
                                         <label >댓글</label>
                                     </div>
-                                    <button onclick="save_comment(${id}, ${toStingReplyUserName})" style="margin-bottom: 10px;" type="button" class="btn btn-success">댓글 남기기</button>
-
-                                    <div class="card" style="width: 25rem;">
-                                        <div class="card-body">
-                                            <p class="card-text">ㅎㅎㅎㅎ내용</p>
-                                            <p class="card-text">User :</p>
-                                            <p class="card-text">Date :</p>
-                                            <a class="btn btn-primary">수정</a>
-                                            <a class="btn btn-danger">삭제</a>
-                                        </div>
-                                    </div>
-
-                                    <div class="card" style="width: 25rem;">
-                                        <div class="card-body">
-                                            <p class="card-text">ㅎㅎㅎㅎ내용</p>
-                                            <p class="card-text">User :</p>
-                                            <p class="card-text">Date :</p>
-                                            <a class="btn btn-primary">수정</a>
-                                            <a class="btn btn-danger">삭제</a>
-                                        </div>
-                                    </div>
-
-                                </div>
-                            </div>
+                                    <button onclick="save_comment(${id}, ${toStingReplyUserName})"
+                                        style="margin-bottom: 10px;" type="button" class="btn btn-success">댓글 남기기</button>
                     `;
+
+            // 댓글 내용 붙이기
+            // 있으면 붙이기
+            //없으면 div만 2개 붙이기
+            let repeatReply = `
+            <div class="card" style="width: 25rem;">
+                <div class="card-body">
+                    <p class="card-text">ㅎㅎㅎㅎ내용</p>
+                    <p class="card-text">User :</p>
+                    <p class="card-text">Date :</p>
+                    <a class="btn btn-primary">수정</a>
+                    <a class="btn btn-danger">삭제</a>
+                </div>
+            </div>
+            `;
+
+            tempHtml += repeatReply;
+
             // 2. #container_view_warp 에 HTML을 붙인다.
-            $('#container_view_warp').append(tempHtml);
+            let endReply = `
+                            </div>
+                        </div>`;
+            
+            $('#container_view_warp').append(tempHtml + endReply);
         }
 
     </script>
@@ -203,10 +206,10 @@
             let ftUsername = [[${username}]];
             let ftContents = $('#mycontent').val();
 
-            if (isValidContents(ftTitle) == false) {
+            if (!isValidContents(ftTitle)) {
                 return;
             }
-            if (isValidContents(ftContents) == false) {
+            if (!isValidContents(ftContents)) {
                 return;
             }
 
@@ -230,7 +233,7 @@
 
         function isValidContents(contents) {
             if (contents == '') {
-                alert('내용을 모두 입력해주세요');
+                alert('내용을 입력해주세요');
                 return false;
             }
             if (contents.trim().length > 30) {
