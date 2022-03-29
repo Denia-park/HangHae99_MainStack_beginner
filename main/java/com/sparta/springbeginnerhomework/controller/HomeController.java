@@ -11,9 +11,7 @@ public class HomeController {
     @GetMapping("/")
     public String home(Model model, @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-        if(userDetails == null) {
-        }
-        else{
+        if(userDetails != null) {
             model.addAttribute("username", userDetails.getUsername());
             model.addAttribute("userLoginCheck", true);
         }

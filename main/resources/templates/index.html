@@ -374,6 +374,14 @@
             return true;
         }
 
+        const href = location.href;
+        const queryString = href.substring(href.indexOf("?")+1)
+
+        if (queryString === 'loginUserDoNotEnterErr') {
+            alert("이미 로그인이 되어있습니다.");
+            window.location.href = '/';
+        }
+
     </script>
 
 </head>
