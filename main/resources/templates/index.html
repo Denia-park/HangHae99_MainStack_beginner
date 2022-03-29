@@ -206,7 +206,12 @@
         }
 
         function addReplyHTML(tableNum, replyEachNum ,replyEachUsername, replyEachContent , replyEachCreatedAt) {
-            let tempHtml = `
+            let toStingReplyUserName = [[${username}]];
+            let tempHtml="";
+            console.log(toStingReplyUserName == replyEachUsername)
+
+            if(toStingReplyUserName == replyEachUsername){
+                tempHtml= `
                             <div class="card" style="width: 25rem; margin-bottom: 10px;">
                                 <div class="card-body">
                                     <p class="card-text" style="font-size: 13pt;">${replyEachContent}</p>
@@ -217,6 +222,16 @@
                                 </div>
                             </div>
                             `;
+            }else {
+                tempHtml = `
+                            <div class="card" style="width: 25rem; margin-bottom: 10px;">
+                                <div class="card-body">
+                                    <p class="card-text" style="font-size: 13pt;">${replyEachContent}</p>
+                                    <p class="card-text" style="color: gray; font-size:8pt;"> <b>${replyEachUsername} / ${replyEachCreatedAt}</b> </p>
+                                </div>
+                            </div>
+                            `;
+            }
 
             return tempHtml;
         }
