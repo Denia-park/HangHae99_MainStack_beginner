@@ -3,7 +3,9 @@ package com.sparta.springbeginnerhomework.controller;
 import com.sparta.springbeginnerhomework.model.FreeTable;
 import com.sparta.springbeginnerhomework.repository.FreeTableRepository;
 import com.sparta.springbeginnerhomework.dto.FreeTableRequestDto;
+import com.sparta.springbeginnerhomework.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,8 +31,8 @@ public class FreeTableRestController {
     }
 
     @PostMapping("/api/freetables")
-    public FreeTable postTable(@RequestBody FreeTableRequestDto freeTableRequestDto){
-        FreeTable freeTable = new FreeTable(freeTableRequestDto);
+    public FreeTable postTable(@RequestBody FreeTableRequestDto freeTableRequestDto , @AuthenticationPrincipal UserDetailsImpl userDetails){
+        FreeTable freeTable = new FreeTable(freeTableRequestDto,userDetails);
         return freeTableRepository.save(freeTable);
     }
 

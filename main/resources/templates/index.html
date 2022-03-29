@@ -213,7 +213,9 @@
         }
     </style>
 
-    <script>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+
         $(document).ready(function () {
             // id 가 query 인 녀석 위에서 엔터를 누르면 execSearch() 함수를 실행하라는 뜻입니다.
             $('#close_write').on('click', function () {
@@ -335,20 +337,20 @@
 
         function postWriting() {
             let ftTitle = $('#mytitle').val();
-            let ftWriter = $('#mywriter').val();
+            let ftUsername = [[${username}]];
             let ftContents = $('#mycontent').val();
 
             if (isValidContents(ftTitle) == false) {
                 return;
             }
-            if (isValidContents(ftWriter) == false) {
+            if (isValidContents(ftUsername) == false) {
                 return;
             }
             if (isValidContents(ftContents) == false) {
                 return;
             }
 
-            let data = {'title': ftTitle, 'writer': ftWriter ,'content': ftContents};
+            let data = {'title': ftTitle, 'username': ftUsername ,'content': ftContents};
 
             $.ajax({ // $.ajax = jQeury 를 이용하겠다.
                 type: "POST",
@@ -381,7 +383,7 @@
             alert("이미 로그인이 되어있습니다.");
             window.location.href = '/';
         }
-
+        /*]]>*/
     </script>
 
 </head>
@@ -445,19 +447,13 @@
         </div>
         <div>
             <p>
-                <b>작성자</b>
-            </p>
-            <input type="text" id="mywriter" class="input_writer" placeholder="">
-        </div>
-        <div>
-            <p>
                 <b>내용</b>
             </p>
             <input type="text" id="mycontent" placeholder="">
         </div>
         <p>
         </p>
-        <button class="cta_write" onclick="postWriting()">등록하기</button>
+        <button class="cta_write" onclick="postWriting()">글 등록하기</button>
     </div>
 </div>
 

@@ -31,7 +31,7 @@ public class UserController {
 
     // 회원 로그인 페이지
     @GetMapping("/user/login")
-    public String login(Model model, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public String login(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         if(userDetails != null) {
             return "redirect:/?loginUserDoNotEnterErr"; //
         }
@@ -41,7 +41,7 @@ public class UserController {
 
     // 회원 가입 페이지
     @GetMapping("/user/signup")
-    public String signup(Model model, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public String signup(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         if(userDetails != null) {
             return "redirect:/?loginUserDoNotEnterErr"; //
         }

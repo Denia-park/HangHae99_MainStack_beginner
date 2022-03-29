@@ -10,6 +10,6 @@ public class GlobalExceptionHandler {
     public String handleException(Exception e , Model model){
         model.addAttribute("errCode",4);
         model.addAttribute("errCodeMsg",e.getMessage());
-        return "signup";
+        return "redirect:/forbidden.html";
     }
 }

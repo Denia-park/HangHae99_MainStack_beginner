@@ -7,6 +7,6 @@ import javax.persistence.Column;
 @Getter
 public class FreeTableRequestDto {
     private String title;
-    private String writer;
+    private String username;
     private String content;
 }
