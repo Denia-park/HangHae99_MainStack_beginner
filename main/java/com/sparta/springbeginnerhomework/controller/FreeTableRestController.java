@@ -32,8 +32,11 @@ public class FreeTableRestController {
 
     @PostMapping("/api/freetables")
     public FreeTable postTable(@RequestBody FreeTableRequestDto freeTableRequestDto , @AuthenticationPrincipal UserDetailsImpl userDetails){
-        FreeTable freeTable = new FreeTable(freeTableRequestDto,userDetails);
-        return freeTableRepository.save(freeTable);
+        if(userDetails != null){
+            FreeTable freeTable = new FreeTable(freeTableRequestDto,userDetails);
+            return freeTableRepository.save(freeTable);
+        }
+        return null;
     }
 
 
