@@ -41,4 +41,12 @@ public class ReplyController {
         }
         return null;
     }
+
+    @DeleteMapping("/api/replies/{boardNum}/{replyNum}")
+    public Long deleteReply(@RequestBody ReplyUpdateDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        if(userDetails != null && requestDto.getUsername().equals(userDetails.getUsername())){
+            return replyRepository.deleteByBoardNumAndReplyNum(requestDto.getBoardNum(),requestDto.getReplyNum());
+        }
+        return null;
+    }
 }
