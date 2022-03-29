@@ -10,4 +10,6 @@ public interface ReplyRepository extends JpaRepository<Reply, Long> {
     List<Reply> findALLByBoardNumOrderByCreatedAtDesc(Long boardNum);
 
     List<Reply> findAllByBoardNum(Long boardNum);
+
+    Reply findByBoardNumAndReplyNum(Long boardNum, Long ReplyNum);
 }

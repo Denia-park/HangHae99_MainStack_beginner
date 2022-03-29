@@ -119,12 +119,12 @@
 
                     for (let i = 0; i < replyList.length; i++) {
                         let tableReplyEach = replyList[i];
-                        let tableNum = tableReplyEach['boardNum'];
+                        let boardNum = tableReplyEach['boardNum'];
                         let replyEachNum = tableReplyEach['replyNum'];
                         let replyEachUsername = tableReplyEach['username'];
                         let replyEachContent = tableReplyEach['replyContent'];
                         let replyEachCreatedAt = convertUTCTimeToSeoulTime(tableReplyEach['createdAt']);
-                        tempHtmlReplies += addReplyHTML(tableNum, replyEachNum ,replyEachUsername, replyEachContent , replyEachCreatedAt);
+                        tempHtmlReplies += addReplyHTML(boardNum, replyEachNum ,replyEachUsername, replyEachContent , replyEachCreatedAt);
                     }
                     tempHtmlBoardBody += tempHtmlReplies;
 
@@ -206,7 +206,8 @@
         }
 
         function addReplyHTML(boardNum, replyEachNum ,replyEachUsername, replyEachContent , replyEachCreatedAt) {
-            let toStingReplyUserName = [[${username}]];
+            let ReplyUserName = [[${username}]];
+            let toStingReplyUserName = "'"+[[${username}]]+"'";
             let editcomment_id = "edit_comment_"+replyEachNum ;
             let editcomment_textarea_id = "edit_comment_textarea_"+replyEachNum ;
             let origincomment_id = "origin_comment_"+replyEachNum ;
@@ -214,7 +215,7 @@
             let submitBtn_id = "submit_btn_"+replyEachNum ;
             let tempHtml="";
 
-            if(toStingReplyUserName == replyEachUsername){
+            if(ReplyUserName == replyEachUsername){
                 tempHtml= `
                             <div class="card" style="width: 25rem; margin-bottom: 10px;">
                                     <div class="form-floating none" id="${editcomment_id}">
@@ -225,10 +226,8 @@
                                 <div class="card-body">
                                     <p class="card-text" id="${origincomment_id}" style="font-size: 13pt;">${replyEachContent}</p>
                                     <p class="card-text" style="color: gray; font-size:8pt;"> <b>${replyEachUsername} / ${replyEachCreatedAt}</b> </p>
-<!--                                    <a href="'/api/replies/${boardNum}/${replyEachNum}?'" class="btn btn-primary">수정</a>-->
-<!--                                    <a onclick="editcommentBtn(${editcomment_id})" class="btn btn-primary">수정</a>-->
                                     <a id="${editBtn_id}" onclick="editcommentBtn(${replyEachNum})" class="btn btn-primary">수정</a>
-                                    <a id="${submitBtn_id}" onclick="submitcommentBtn(${replyEachNum})" class="btn btn-primary none">제출</a>
+                                    <a id="${submitBtn_id}" onclick="submitcommentBtn(${toStingReplyUserName},${boardNum},${replyEachNum})" class="btn btn-primary none">제출</a>
                                     <a onclick="" class="btn btn-danger">삭제</a>
                                 </div>
                             </div>
@@ -327,34 +326,32 @@
         $(`#edit_btn_${replyNum}`).hide();
         }
 
-        // function submitcommentBtn(replyNum) {
-        //     let submitContent = $(`#edit_comment_textarea_${replyNum}`).val();
-        //     if(!isValidContents(submitContent)){
-        //         return ;
-        //     }
-        //     let data = { '' : submitContent}
-        // }
-        //
-        // function putReplies(data){
-        //     $.ajax({ // $.ajax = jQeury 를 이용하겠다.
-        //         type: "POST",
-        //         url: `/api/replies/${data.boardNum}`,
-        //         contentType: "application/json", // JSON 형식으로 전달함을 알리기
-        //         data: JSON.stringify(data), //웹에서 주고 받을 때 스트링으로만 주고 받기 때문에 문자열로 바꿔서 전달함
-        //         success: function (response) {
-        //             if(response == null){
-        //                 alert("로그인이 필요한 기능입니다.");
-        //                 window.location.href = '/user/login';
-        //             }
-        //             alert('메시지가 성공적으로 작성되었습니다.');
-        //             $('#container_view').removeClass('active');
-        //             $('#container_view_warp').empty();
-        //             enter_board_view(memory);
-        //             // window.location.reload();
-        //         }
-        //     });
-        //
-        // }
+        function submitcommentBtn(replyEachUsername,boardNum, replyNum) {
+            let submitContent = $(`#edit_comment_textarea_${replyNum}`).val();
+            if(!isValidContents(submitContent)){
+                return ;
+            }
+            let data = { 'boardNum':boardNum ,'replyNum' : replyNum , 'username' : replyEachUsername, 'replyContent' : submitContent}
+            putReplies(data);
+        }
+
+
+        function putReplies(data){
+            $.ajax({ // $.ajax = jQeury 를 이용하겠다.
+                type: "POST",
+                url: `/api/replies/${data.boardNum}/${data.replyNum}`,
+                contentType: "application/json", // JSON 형식으로 전달함을 알리기
+                data: JSON.stringify(data), //웹에서 주고 받을 때 스트링으로만 주고 받기 때문에 문자열로 바꿔서 전달함
+                success: function (response) {
+                    alert('메시지가 성공적으로 수정되었습니다.');
+                    $('#container_view').removeClass('active');
+                    $('#container_view_warp').empty();
+                    enter_board_view(memory);
+                    // window.location.reload();
+                }
+            });
+
+        }
 
     </script>
 

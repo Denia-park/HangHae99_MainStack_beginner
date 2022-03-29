@@ -1,6 +1,7 @@
 package com.sparta.springbeginnerhomework.model;
 
 import com.sparta.springbeginnerhomework.dto.ReplyRequestDto;
+import com.sparta.springbeginnerhomework.dto.ReplyUpdateDto;
 import com.sparta.springbeginnerhomework.modelInterface.Timestamped;
 import com.sparta.springbeginnerhomework.security.UserDetailsImpl;
 import lombok.Getter;
@@ -33,5 +34,16 @@ public class Reply extends Timestamped {
         this.replyNum = replyNum;
         this.username = userDetails.getUsername();
         this.replyContent = requestDto.getReplyContent();
+    }
+
+    public Reply(ReplyUpdateDto requestDto, UserDetailsImpl userDetails) {
+        this.boardNum = requestDto.getBoardNum();
+        this.replyNum = requestDto.getReplyNum();
+        this.username = userDetails.getUsername();
+        this.replyContent = requestDto.getReplyContent();
+    }
+
+    public void setReplyContent(String updateContent) {
+        this.replyContent = updateContent;
     }
 }

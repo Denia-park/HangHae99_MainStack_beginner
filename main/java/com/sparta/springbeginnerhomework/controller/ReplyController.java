@@ -2,6 +2,7 @@ package com.sparta.springbeginnerhomework.controller;
 
 import com.sparta.springbeginnerhomework.dto.FreeTableRequestDto;
 import com.sparta.springbeginnerhomework.dto.ReplyRequestDto;
+import com.sparta.springbeginnerhomework.dto.ReplyUpdateDto;
 import com.sparta.springbeginnerhomework.model.FreeTable;
 import com.sparta.springbeginnerhomework.model.Reply;
 import com.sparta.springbeginnerhomework.repository.FreeTableRepository;
@@ -26,6 +27,17 @@ public class ReplyController {
             Reply reply = new Reply(boardNum,replyNum ,requestDto, userDetails);
             replyRepository.save(reply);
             return reply;
+        }
+        return null;
+    }
+
+    @PostMapping("/api/replies/{boardNum}/{replyNum}")
+    public Reply postReply(@RequestBody ReplyUpdateDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        if(userDetails != null && requestDto.getUsername().equals(userDetails.getUsername())){
+            Reply searchReply = replyRepository.findByBoardNumAndReplyNum(requestDto.getBoardNum(),requestDto.getReplyNum());
+            searchReply.setReplyContent(requestDto.getReplyContent());
+            replyRepository.save(searchReply);
+            return searchReply;
         }
         return null;
     }
