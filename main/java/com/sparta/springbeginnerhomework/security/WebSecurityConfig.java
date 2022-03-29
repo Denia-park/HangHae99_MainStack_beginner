@@ -2,6 +2,7 @@ package com.sparta.springbeginnerhomework.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -40,6 +41,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                     .antMatchers("/user/**").permitAll()
                     // index page는 공개
                     .antMatchers("/").permitAll()
+                    .antMatchers(HttpMethod.GET,"/api/freetables").permitAll()
+                    .antMatchers(HttpMethod.GET,"/api/freetables/**").permitAll()
                 // 그 외 어떤 요청이든 '인증'
                 .anyRequest().authenticated()
                 .and()
