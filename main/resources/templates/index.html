@@ -20,6 +20,7 @@
     <!--    <meta property="og:image" content="{{ url_for('static', filename='/img/mW_img.png') }}" />-->
 
     <script th:inline="javascript">
+        let memory;
         $(document).ready(function () {
             // id 가 query 인 녀석 위에서 엔터를 누르면 execSearch() 함수를 실행하라는 뜻입니다.
             $('#close_write').on('click', function () {
@@ -111,12 +112,13 @@
                         let replyEachContent = tableReplyEach['replyContent'];
                         let replyEachCreatedAt = convertUTCTimeToSeoulTime(tableReplyEach['createdAt']);
                         tempHtmlReplies += addReplyHTML(tableNum, replyEachNum ,replyEachUsername, replyEachContent , replyEachCreatedAt);
-                        console.log(tempHtmlReplies)
                     }
                     tempHtmlBoardBody += tempHtmlReplies;
-                    
+
                     // 2. #container_view_warp 에 HTML을 붙인다.
                     $('#container_view_warp').append(tempHtmlBoardBody + endReply);
+
+                    memory = id;
 
                     $('#container_view').addClass('active');
 
@@ -270,7 +272,10 @@
                         window.location.href = '/user/login';
                     }
                     alert('메시지가 성공적으로 작성되었습니다.');
-                    window.location.reload();
+                    $('#container_view').removeClass('active');
+                    $('#container_view_warp').empty();
+                    enter_board_view(memory);
+                    // window.location.reload();
                 }
             });
 

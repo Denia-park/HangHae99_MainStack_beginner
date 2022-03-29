@@ -18,7 +18,7 @@ import java.util.List;
 public class ReplyController {
 
     private final ReplyRepository replyRepository;
-    
+
     @PostMapping("/api/replies/{boardNum}")
     public Reply postReply(@PathVariable Long boardNum, @RequestBody ReplyRequestDto requestDto, @AuthenticationPrincipal UserDetailsImpl userDetails){
         if(userDetails != null){
