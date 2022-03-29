@@ -43,7 +43,7 @@ public class UserController {
     @GetMapping("/user/signup")
     public String signup(Model model, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         if(userDetails != null) {
-            model.addAttribute("userLoginCheck", true);
+            return "redirect:/?loginUserDoNotEnterErr"; //
         }
 
         return "signup";
