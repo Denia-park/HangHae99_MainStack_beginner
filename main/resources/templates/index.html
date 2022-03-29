@@ -46,15 +46,14 @@
                 type: 'GET',
                 url: '/api/freetables',
                 success: function (response) {
-                    console.log(response);
                     //타임리프를 이용해서 게시판을 꾸며야됨 !!.
                     for (let i = 0; i < response.length; i++) {
                         let tableMsg = response[i];
                         let id = tableMsg['id'];
                         let title = tableMsg['title'];
-                        let writer = tableMsg['username'];
+                        let username = tableMsg['username'];
                         let createdAt = convertUTCTimeToSeoulTime(tableMsg['createdAt']);
-                        addTableHTML(id, title ,writer, createdAt);
+                        addTableHTML(id, title ,username, createdAt);
                     }
                 }
             })
@@ -93,10 +92,10 @@
                 success: function (response) {
                     let tableMsg = response;
                     let title = tableMsg['title'];
-                    let writer = tableMsg['username'];
+                    let username = tableMsg['username'];
                     let content = tableMsg['content'];
                     let createdAt = convertUTCTimeToSeoulTime(tableMsg['createdAt']);
-                    addTableViewHTML(title, writer, content,createdAt);
+                    addTableViewHTML(id,title, username, content,createdAt);
 
                     $('#container_view').addClass('active');
 
@@ -107,7 +106,7 @@
             })
         }
 
-        function addTableViewHTML(title, writer, content ,createdAt) {
+        function addTableViewHTML(id,title, username, content ,createdAt) {
             // 1. HTML 태그를 만듭니다.
             let tempHtml = `
                             <div id="container_view" class="popup-container_view">
@@ -130,7 +129,7 @@
                                     </div>
                                     <div>
                                         <b style="font-size: 17pt">작성자</b>
-                                        <p>${writer}</p>
+                                        <p>${username}</p>
                                     </div>
                                     <div>
                                         <b style="font-size: 17pt">내용</b>
@@ -138,11 +137,11 @@
                                     </div>
 
                                     <div class="form-floating">
-                                        <textarea class="form-control" placeholder="Leave a comment here" id="comment"
+                                        <textarea class="form-control" placeholder=" " id="comment"
                                                   style="width: 25rem; height: 100px; margin-bottom: 10px;"></textarea>
                                         <label >댓글</label>
                                     </div>
-                                    <button onclick="save_comment()" style="margin-bottom: 10px;" type="button" class="btn btn-success">댓글 남기기</button>
+                                    <button onclick="save_comment(${id}, ${toStingUserName})" style="margin-bottom: 10px;" type="button" class="btn btn-success">댓글 남기기</button>
 
                                     <div class="card" style="width: 25rem;">
                                         <div class="card-body">
@@ -286,7 +285,7 @@
                     <b>글 제목</b>
                 </p>
                 <div class="form-floating">
-                    <textarea class="form-control" placeholder="Leave a title here" id="mytitle"
+                    <textarea class="form-control" placeholder=" " id="mytitle"
                               style="width: 25rem; height: 100px; margin-bottom: 10px;"></textarea>
                     <label >글 제목</label>
                 </div>
@@ -296,7 +295,7 @@
                     <b>내용</b>
                 </p>
                 <div class="form-floating">
-                    <textarea class="form-control" placeholder="Leave a comment here" id="mycontent"
+                    <textarea class="form-control" placeholder=" " id="mycontent"
                               style="width: 25rem; height: 100px; margin-bottom: 10px;"></textarea>
                     <label >내용</label>
                 </div>
