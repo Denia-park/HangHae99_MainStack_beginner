@@ -85,16 +85,38 @@
         }
 
         function enter_board_view(id) {
+            let tempHtmlReplies = "";
+            let tempHtmlBoardBody;
+            let endReply = `
+                                </div>
+                            </div>`;
+
             $.ajax({
                 type: 'GET',
                 url: `/api/freetables/${id}`,
                 success: function (response) {
-                    let tableMsg = response;
+                    let tableMsg = response[0];
+                    let replyList = response[1];
                     let title = tableMsg['title'];
                     let username = tableMsg['username'];
                     let content = tableMsg['content'];
                     let createdAt = convertUTCTimeToSeoulTime(tableMsg['createdAt']);
-                    addTableViewHTML(id,title, username, content,createdAt);
+                    tempHtmlBoardBody = addTableViewHTML(id,title, username, content,createdAt);
+
+                    for (let i = 0; i < replyList.length; i++) {
+                        let tableReplyEach = replyList[i];
+                        let tableNum = tableReplyEach['boardNum'];
+                        let replyEachNum = tableReplyEach['replyNum'];
+                        let replyEachUsername = tableReplyEach['username'];
+                        let replyEachContent = tableReplyEach['replyContent'];
+                        let replyEachCreatedAt = convertUTCTimeToSeoulTime(tableReplyEach['createdAt']);
+                        tempHtmlReplies += addReplyHTML(tableNum, replyEachNum ,replyEachUsername, replyEachContent , replyEachCreatedAt);
+                        console.log(tempHtmlReplies)
+                    }
+                    tempHtmlBoardBody += tempHtmlReplies;
+                    
+                    // 2. #container_view_warp 에 HTML을 붙인다.
+                    $('#container_view_warp').append(tempHtmlBoardBody + endReply);
 
                     $('#container_view').addClass('active');
 
@@ -129,6 +151,7 @@
         function addTableViewHTML(id,title, username, content ,createdAt) {
             // 1. HTML 태그를 만듭니다.
             let toStingReplyUserName = "'"+[[${username}]]+"'";
+
             let tempHtml = `
                             <div id="container_view" class="popup-container_view">
                                 <div class="popup_view">
@@ -164,32 +187,24 @@
                                     <button onclick="save_comment(${id}, ${toStingReplyUserName})"
                                         style="margin-bottom: 10px;" type="button" class="btn btn-success">댓글 남기기</button>
                     `;
-
-            // 댓글 내용 붙이기
-            // 있으면 붙이기
-            //없으면 div만 2개 붙이기
-            let repeatReply = `
-            <div class="card" style="width: 25rem;">
-                <div class="card-body">
-                    <p class="card-text">ㅎㅎㅎㅎ내용</p>
-                    <p class="card-text">User :</p>
-                    <p class="card-text">Date :</p>
-                    <a class="btn btn-primary">수정</a>
-                    <a class="btn btn-danger">삭제</a>
-                </div>
-            </div>
-            `;
-
-            tempHtml += repeatReply;
-
-            // 2. #container_view_warp 에 HTML을 붙인다.
-            let endReply = `
-                            </div>
-                        </div>`;
-            
-            $('#container_view_warp').append(tempHtml + endReply);
+            return tempHtml;
         }
 
+        function addReplyHTML(tableNum, replyEachNum ,replyEachUsername, replyEachContent , replyEachCreatedAt) {
+            let tempHtml = `
+                            <div class="card" style="width: 25rem; margin-bottom: 10px;">
+                                <div class="card-body">
+                                    <p class="card-text" style="font-size: 13pt;">${replyEachContent}</p>
+                                    <p class="card-text" style="color: gray; font-size:8pt;"> <b>${replyEachUsername} / ${replyEachCreatedAt}</b> </p>
+<!--                                    <a href="'/api/replies/${tableNum}/${replyEachNum}?'" class="btn btn-primary">수정</a>-->
+                                    <a class="btn btn-primary">수정</a>
+                                    <a class="btn btn-danger">삭제</a>
+                                </div>
+                            </div>
+                            `;
+
+            return tempHtml;
+        }
     </script>
 
     <script th:if="${userLoginCheck}" th:inline="javascript">
