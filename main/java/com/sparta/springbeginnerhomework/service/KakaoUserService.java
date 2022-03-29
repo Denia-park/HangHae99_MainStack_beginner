@@ -22,6 +22,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Random;
 import java.util.UUID;
 
 @Service
@@ -104,33 +105,56 @@ public class KakaoUserService {
                 .get("nickname").asText();
         String email = jsonNode.get("kakao_account")
                 .get("email").asText();
-        String tempKaNick = String.format("KaKaoUser_%s",String.valueOf(id).substring(0,5));
+        String tempKaNick = "";
 
         return new KakaoUserInfoDto(id,nickname,tempKaNick,email);
     }
 
-    private User registerKakaoUserIfNeed(KakaoUserInfoDto kakaoUserInfo) {
-        // DB 에 중복된 Kakao Id 가 있는지 확인
-        User kakaoUser = userRepository.findByKakaoId(kakaoUserInfo.getId())
+    private User registerKakaoUserIfNeed(KakaoUserInfoDto inputKakaoUser) {
+        // DB 에 kakaoID로 검색해서 사람 찾기
+        User findedKakaoUser = userRepository.findByKakaoId(inputKakaoUser.getId())
                 .orElse(null);
         // 없으면 DB에 데이터 저장
-        if (kakaoUser == null) {
+        if (findedKakaoUser == null) { // 회원 아닌 사람
             //1.없으면 회원가입 진행
-            User newUser = getNewUserDataByConvertingKakaoUserToUser(kakaoUserInfo);
+            User newUser = getNewUserDataByConvertingKakaoUserToUser(inputKakaoUser);
             userRepository.save(newUser);
             return newUser;
         }
-        return kakaoUser;
+        return findedKakaoUser;
     }
 
     private User getNewUserDataByConvertingKakaoUserToUser(KakaoUserInfoDto kakaoUserInfo) {
         Long kakaoId = kakaoUserInfo.getId();
-        String nickname = kakaoUserInfo.getTempKaNick();
+
+        boolean idFlag = true;
+        Random random = new Random(); //랜덤 객체 생성(디폴트 시드값 : 현재시간)
+        random.setSeed(System.currentTimeMillis()); //시드값 설정을 따로 할수도 있음
+        String bfNik = String.format("KaoUser_%s",String.valueOf(kakaoId).substring(0,6));
+        String afNik = bfNik;
+        while(idFlag){
+            User tempUser = userRepository.findByUsername(afNik).orElse(null);
+            if(tempUser == null)
+                break;
+            afNik = bfNik + (random.nextInt(10000)+1);
+        }
+
+        String nickname = afNik;
+        //여기서 ID 검색해서 ID변경해서 넣어주는게 낫다.
         // password: random UUID
         String password = UUID.randomUUID().toString();
         String encodedPassword = passwordEncoder.encode(password);
 
         return new User(nickname, encodedPassword, kakaoId);
+    }
+
+    private User getNewUserDataByConvertingKakaoUserToUser(KakaoUserInfoDto kakaoUserInfo,String tempKaNick) {
+        Long kakaoId = kakaoUserInfo.getId();
+        // password: random UUID
+        String password = UUID.randomUUID().toString();
+        String encodedPassword = passwordEncoder.encode(password);
+
+        return new User(tempKaNick, encodedPassword, kakaoId);
     }
 
     private void forceLoginUser(User kakaoUser) {
