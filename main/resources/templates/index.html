@@ -113,7 +113,7 @@
                             <div id="container_view" class="popup-container_view">
                                 <div class="popup_view">
                                     <button id="close_view" class="close_view">
-                                            X
+                                        X
                                     </button>
                                     <h1>
                                         <b>
@@ -136,6 +136,34 @@
                                         <b style="font-size: 17pt">내용</b>
                                         <p>${content}</p>
                                     </div>
+
+                                    <div class="form-floating">
+                                        <textarea class="form-control" placeholder="Leave a comment here" id="comment"
+                                                  style="width: 25rem; height: 100px; margin-bottom: 10px;"></textarea>
+                                        <label >댓글</label>
+                                    </div>
+                                    <button onclick="save_comment()" style="margin-bottom: 10px;" type="button" class="btn btn-success">댓글 남기기</button>
+
+                                    <div class="card" style="width: 25rem;">
+                                        <div class="card-body">
+                                            <p class="card-text">ㅎㅎㅎㅎ내용</p>
+                                            <p class="card-text">User :</p>
+                                            <p class="card-text">Date :</p>
+                                            <a class="btn btn-primary">수정</a>
+                                            <a class="btn btn-danger">삭제</a>
+                                        </div>
+                                    </div>
+
+                                    <div class="card" style="width: 25rem;">
+                                        <div class="card-body">
+                                            <p class="card-text">ㅎㅎㅎㅎ내용</p>
+                                            <p class="card-text">User :</p>
+                                            <p class="card-text">Date :</p>
+                                            <a class="btn btn-primary">수정</a>
+                                            <a class="btn btn-danger">삭제</a>
+                                        </div>
+                                    </div>
+
                                 </div>
                             </div>
                     `;
@@ -249,7 +277,7 @@
             </button>
             <h1>
                 <b>
-                    ✏글 쓰기 페이지
+                    🖋글 쓰기 페이지
                 </b>
             </h1>
             <p>하고 싶은 말을 짧게 써주세요.</p>
@@ -257,13 +285,21 @@
                 <p>
                     <b>글 제목</b>
                 </p>
-                <input type="text" id="mytitle" placeholder="">
+                <div class="form-floating">
+                    <textarea class="form-control" placeholder="Leave a title here" id="mytitle"
+                              style="width: 25rem; height: 100px; margin-bottom: 10px;"></textarea>
+                    <label >글 제목</label>
+                </div>
             </div>
             <div>
                 <p>
                     <b>내용</b>
                 </p>
-                <input type="text" id="mycontent" placeholder="">
+                <div class="form-floating">
+                    <textarea class="form-control" placeholder="Leave a comment here" id="mycontent"
+                              style="width: 25rem; height: 100px; margin-bottom: 10px;"></textarea>
+                    <label >내용</label>
+                </div>
             </div>
             <p>
             </p>
@@ -272,7 +308,6 @@
     </div>
 
     <div id="container_view_warp">
-
 
     </div>
 </div>
