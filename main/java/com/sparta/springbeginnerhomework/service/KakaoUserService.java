@@ -58,8 +58,8 @@ public class KakaoUserService {
         // HTTP Body 생성
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("grant_type", "authorization_code");
-        body.add("client_id", "afb713f0da2f3a442f6a182a11391080");
-        body.add("redirect_uri", "http://localhost:8080/user/kakao/callback");
+        body.add("client_id", "f3909f375117ab8b6677176c207e72b0");
+        body.add("redirect_uri", "http://denia-wwdt.shop:8080/user/kakao/callback");
         body.add("code", code);
 
         // HTTP 요청 보내기
