@@ -42,6 +42,7 @@ public class UserService {
         final int PASSWORD_FORM_ERR = -2;
         final int RE_CHECK_PASSWORD_FORM_ERR = -3;
         final int DUPLICATE_USERNAME_ERR = -4;
+        final int NULL_POINTER_ERR = -5;
 
         int errCode = NO_ERR;
         String errCodeMsg = null;
@@ -50,7 +51,11 @@ public class UserService {
         String idRegex = "^[A-Za-z0-9]{3,30}$";
         String pwRegex = "^[A-Za-z0-9!@#$%^&*+=]{4,30}$";
 
-        if (!Pattern.matches(idRegex, requestDto.getUsername())){
+        if(requestDto.getUsername() == null || requestDto.getPassword() == null || requestDto.getReCheckPassword() == null){
+            errCode = NULL_POINTER_ERR;
+            errCodeMsg = "Null Pointer ERR 발생";
+        }
+        else if (!Pattern.matches(idRegex, requestDto.getUsername())){
             errCode = USERNAME_FORM_ERR;
             errCodeMsg = "1.아이디 조건을 확인해주세요.";
         }
