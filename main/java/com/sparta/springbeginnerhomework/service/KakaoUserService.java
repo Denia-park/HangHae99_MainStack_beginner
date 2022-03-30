@@ -103,8 +103,9 @@ public class KakaoUserService {
         Long id = jsonNode.get("id").asLong();
         String nickname = jsonNode.get("properties")
                 .get("nickname").asText();
-        String email = jsonNode.get("kakao_account")
-                .get("email").asText();
+//        String email = jsonNode.get("kakao_account")
+//                .get("email").asText();
+        String email = "Test@example.com";
         String tempKaNick = "";
 
         return new KakaoUserInfoDto(id,nickname,tempKaNick,email);

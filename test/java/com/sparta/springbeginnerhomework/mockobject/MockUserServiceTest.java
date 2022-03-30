@@ -320,7 +320,7 @@ public class MockUserServiceTest {
             @Nested
             @DisplayName("ID 중복검사 : errCode -4")
             class DuplicateID{
-                final int PW_RECHECK_ERR_CODE = -4;
+                final int ID_RECHECK_ERR_CODE = -4;
 
                 @Test
                 @DisplayName("ID 중복 검사 실패1")
@@ -338,7 +338,7 @@ public class MockUserServiceTest {
                     UserSignupStatusDto userSignupStatusDto = mockUserService.registerUser(signupRequestDto);
 
                     // then
-                    assertEquals(PW_RECHECK_ERR_CODE, userSignupStatusDto.getSignupStatus());
+                    assertEquals(ID_RECHECK_ERR_CODE, userSignupStatusDto.getSignupStatus());
                     assertEquals("중복된 사용자 ID 가 존재합니다.", userSignupStatusDto.getSignupStatusErrMsg());
                 }
 
@@ -358,7 +358,7 @@ public class MockUserServiceTest {
                     UserSignupStatusDto userSignupStatusDto = mockUserService.registerUser(signupRequestDto);
 
                     // then
-                    assertEquals(PW_RECHECK_ERR_CODE, userSignupStatusDto.getSignupStatus());
+                    assertEquals(ID_RECHECK_ERR_CODE, userSignupStatusDto.getSignupStatus());
                     assertEquals("중복된 사용자 ID 가 존재합니다.", userSignupStatusDto.getSignupStatusErrMsg());
                 }
 
