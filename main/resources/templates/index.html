@@ -1,0 +1,476 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+            crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="css/style.css">
+
+    <title>자유게시판</title>
+    <meta property="og:title" content="자유게시판" />
+    <meta property="og:description" content="하고싶은 말 하세요" />
+    <!--    <meta property="og:image" content="{{ url_for('static', filename='/img/mW_img.png') }}" />-->
+
+    <script th:inline="javascript">
+        let memory;
+        $(document).ready(function () {
+            // id 가 query 인 녀석 위에서 엔터를 누르면 execSearch() 함수를 실행하라는 뜻입니다.
+            $('#close_write').on('click', function () {
+                $('#container_write').removeClass('active');
+            })
+
+            getMessages();
+            // showProduct();
+        })
+
+        // 외부영역 클릭 시 팝업 닫기
+        $(document).mouseup(function (e){
+            var LayerPopupView = $(".popup-container_view");
+            var LayerPopupWrite = $(".popup-container_write");
+            if(LayerPopupView.has(e.target).length === 0){
+                $('#container_view').removeClass('active');
+                $('#container_view_warp').empty();
+            }
+            if(LayerPopupWrite.has(e.target).length === 0){
+                $('#container_write').removeClass('active');
+            }
+        });
+
+        const href = location.href;
+        const queryString = href.substring(href.indexOf("?")+1)
+
+        if (queryString === 'loginUserDoNotEnterErr') {
+            alert("이미 로그인이 되어있습니다.");
+            window.location.href = '/';
+        }
+
+        function getMessages() {
+            // 1. 기존 내용을 지웁니다.
+            // $('#cards-box').empty();
+            // 2. 메모 목록을 불러와서 HTML로 붙입니다.
+            $.ajax({
+                type: 'GET',
+                url: '/api/freetables',
+                success: function (response) {
+                    //타임리프를 이용해서 게시판을 꾸며야됨 !!.
+                    for (let i = 0; i < response.length; i++) {
+                        let tableMsg = response[i];
+                        let id = tableMsg['id'];
+                        let title = tableMsg['title'];
+                        let username = tableMsg['username'];
+                        let createdAt = convertUTCTimeToSeoulTime(tableMsg['createdAt']);
+                        addTableHTML(id, title ,username, createdAt);
+                    }
+                }
+            })
+        }
+
+        function convertUTCTimeToSeoulTime(UTCDate){
+            let SeoulTime = new Date(UTCDate)
+            SeoulTime.setHours(SeoulTime.getHours()+9)
+            // console.log(SeoulTime.toLocaleString())
+            return SeoulTime.toLocaleString()
+        }
+
+        function addTableHTML(id,title ,username, createdAt) {
+            // 1. HTML 태그를 만듭니다.
+            let tempHtml = `
+                            <tr>
+                                <th scope="row">${id}</th>
+                                <td colspan="3" onclick="enter_board_view(${id})">
+                                    <b style="cursor: pointer;">
+                                        ${title}
+                                    </b>
+                                </td>
+                                <td>${username}</td>
+                                <td>${createdAt}</td>
+                            </tr>
+                    `;
+            // 2. #cards-box 에 HTML을 붙인다.
+            $('#tableBody').append(tempHtml);
+        }
+
+        function enter_board_view(id) {
+            let tempHtmlReplies = "";
+            let tempHtmlBoardBody;
+            let endReply = `
+                                </div>
+                            </div>`;
+
+            $.ajax({
+                type: 'GET',
+                url: `/api/freetables/${id}`,
+                success: function (response) {
+                    let tableMsg = response[0];
+                    let replyList = response[1];
+                    let title = tableMsg['title'];
+                    let username = tableMsg['username'];
+                    let content = tableMsg['content'];
+                    let createdAt = convertUTCTimeToSeoulTime(tableMsg['createdAt']);
+                    tempHtmlBoardBody = addTableViewHTML(id,title, username, content,createdAt);
+
+                    for (let i = 0; i < replyList.length; i++) {
+                        let tableReplyEach = replyList[i];
+                        let boardNum = tableReplyEach['boardNum'];
+                        let replyEachNum = tableReplyEach['replyNum'];
+                        let replyEachUsername = tableReplyEach['username'];
+                        let replyEachContent = tableReplyEach['replyContent'];
+                        let replyEachCreatedAt = convertUTCTimeToSeoulTime(tableReplyEach['createdAt']);
+                        tempHtmlReplies += addReplyHTML(boardNum, replyEachNum ,replyEachUsername, replyEachContent , replyEachCreatedAt);
+                    }
+                    tempHtmlBoardBody += tempHtmlReplies;
+
+                    // 2. #container_view_warp 에 HTML을 붙인다.
+                    $('#container_view_warp').append(tempHtmlBoardBody + endReply);
+
+                    memory = id;
+
+                    $('#container_view').addClass('active');
+
+                    $('#close_view').on('click', function () {
+                        $('#container_view').removeClass('active');
+                        $('#container_view_warp').empty();
+                    })
+                }
+            })
+        }
+
+        function save_comment(id , username) {
+            let replyBoardNum = id;
+            let replyUsername = username;
+            let strNull = "null";
+            let replyContent = $('#comment').val();
+
+            if (replyUsername == strNull) {
+                alert("로그인이 필요한 기능입니다.");
+                window.location.href = '/user/login';
+            }
+
+            if(!isValidContents(replyContent)){
+                return;
+            }
+
+            let data = {'boardNum' : replyBoardNum,'username': replyUsername ,'replyContent': replyContent};
+
+            postReplies(data);
+        }
+
+        function addTableViewHTML(id,title, username, content ,createdAt) {
+            // 1. HTML 태그를 만듭니다.
+            let toStingReplyUserName = "'"+[[${username}]]+"'";
+
+            let tempHtml = `
+                            <div id="container_view" class="popup-container_view">
+                                <div class="popup_view">
+                                    <button id="close_view" class="close_view">
+                                        X
+                                    </button>
+                                    <h1>
+                                        <b>
+                                            📜게시글 조회 페이지
+                                        </b>
+                                    </h1>
+                                    <div>
+                                        <b style="font-size: 13pt">작성일</b>
+                                        <p>${createdAt}</p>
+                                    </div>
+                                    <div>
+                                        <b style="font-size: 17pt">글 제목</b>
+                                        <p>${title}</p>
+                                    </div>
+                                    <div>
+                                        <b style="font-size: 17pt">작성자</b>
+                                        <p>${username}</p>
+                                    </div>
+                                    <div>
+                                        <b style="font-size: 17pt">내용</b>
+                                        <p>${content}</p>
+                                    </div>
+                                    <div class="form-floating">
+                                        <textarea class="form-control" placeholder=" " id="comment"
+                                                style="width: 25rem; height: 100px; margin-bottom: 10px;"></textarea>
+                                        <label >댓글</label>
+                                    </div>
+                                    <button onclick="save_comment(${id}, ${toStingReplyUserName})"
+                                        style="margin-bottom: 10px;" type="button" class="btn btn-success">댓글 남기기</button>
+                    `;
+            return tempHtml;
+        }
+
+        function addReplyHTML(boardNum, replyEachNum ,replyEachUsername, replyEachContent , replyEachCreatedAt) {
+            let ReplyUserName = [[${username}]];
+            let toStingReplyUserName = "'"+[[${username}]]+"'";
+            let editcomment_id = "edit_comment_"+replyEachNum ;
+            let editcomment_textarea_id = "edit_comment_textarea_"+replyEachNum ;
+            let origincomment_id = "origin_comment_"+replyEachNum ;
+            let editBtn_id = "edit_btn_"+replyEachNum ;
+            let submitBtn_id = "submit_btn_"+replyEachNum ;
+            let tempHtml="";
+
+            if(ReplyUserName == replyEachUsername){
+                tempHtml= `
+                            <div class="card" style="width: 25rem; margin-bottom: 10px;">
+                                    <div class="form-floating none" id="${editcomment_id}">
+                                        <textarea class="form-control" id="${editcomment_textarea_id}"
+                                                style="width: 398px; height: 100px;">${replyEachContent}</textarea>
+                                        <label >수정할 댓글</label>
+                                    </div>
+                                <div class="card-body">
+                                    <p class="card-text" id="${origincomment_id}" style="font-size: 13pt;">${replyEachContent}</p>
+                                    <p class="card-text" style="color: gray; font-size:8pt;"> <b>${replyEachUsername} / ${replyEachCreatedAt}</b> </p>
+                                    <a id="${editBtn_id}" onclick="editcommentBtn(${replyEachNum})" class="btn btn-primary">수정</a>
+                                    <a id="${submitBtn_id}" onclick="submitcommentBtn(${toStingReplyUserName},${boardNum},${replyEachNum})" class="btn btn-primary none">제출</a>
+                                    <a onclick="deletecommentBtn(${toStingReplyUserName},${boardNum},${replyEachNum})" class="btn btn-danger">삭제</a>
+                                </div>
+                            </div>
+                            `;
+            }else {
+                tempHtml = `
+                            <div class="card" style="width: 25rem; margin-bottom: 10px;">
+                                <div class="card-body">
+                                    <p class="card-text" style="font-size: 13pt;">${replyEachContent}</p>
+                                    <p class="card-text" style="color: gray; font-size:8pt;"> <b>${replyEachUsername} / ${replyEachCreatedAt}</b> </p>
+                                </div>
+                            </div>
+                            `;
+            }
+
+            return tempHtml;
+        }
+    </script>
+
+    <script th:if="${userLoginCheck}" th:inline="javascript">
+
+        function enter_board_write(){
+            if([[${userLoginCheck}]])
+                $('#container_write').addClass('active');
+            else
+                alert("로그인이 필요합니다.");
+        }
+
+        function postWriting() {
+            let ftTitle = $('#mytitle').val();
+            let ftUsername = [[${username}]];
+            let ftContents = $('#mycontent').val();
+
+            if (!isValidContents(ftTitle)) {
+                return;
+            }
+            if (!isValidContents(ftContents)) {
+                return;
+            }
+
+            let data = {'title': ftTitle, 'username': ftUsername ,'content': ftContents};
+
+            $.ajax({ // $.ajax = jQeury 를 이용하겠다.
+                type: "POST",
+                url: "/api/freetables",
+                contentType: "application/json", // JSON 형식으로 전달함을 알리기
+                data: JSON.stringify(data), //웹에서 주고 받을 때 스트링으로만 주고 받기 때문에 문자열로 바꿔서 전달함
+                success: function (response) {
+                    if(response == null){
+                        alert("로그인을 해주세요");
+                        window.location.reload();
+                    }
+                    alert('메시지가 성공적으로 작성되었습니다.');
+                    window.location.reload();
+                }
+            });
+        }
+
+        function isValidContents(contents) {
+            if (contents == '') {
+                alert('내용을 입력해주세요');
+                return false;
+            }
+            if (contents.trim().length > 30) {
+                alert('공백 포함 30자 이하로 입력해주세요');
+                return false;
+            }
+            return true;
+        }
+
+        function postReplies(data) {
+            $.ajax({ // $.ajax = jQeury 를 이용하겠다.
+                type: "POST",
+                url: `/api/replies/${data.boardNum}`,
+                contentType: "application/json", // JSON 형식으로 전달함을 알리기
+                data: JSON.stringify(data), //웹에서 주고 받을 때 스트링으로만 주고 받기 때문에 문자열로 바꿔서 전달함
+                success: function (response) {
+                    if(response == null){
+                        alert("로그인이 필요한 기능입니다.");
+                        window.location.href = '/user/login';
+                    }
+                    alert('메시지가 성공적으로 작성되었습니다.');
+                    reloadContainerView();
+                    // window.location.reload();
+                }
+            });
+
+        }
+
+        function editcommentBtn(replyNum) {
+        $(`#edit_comment_${replyNum}`).show();
+        $(`#origin_comment_${replyNum}`).hide();
+        $(`#submit_btn_${replyNum}`).show();
+        $(`#edit_btn_${replyNum}`).hide();
+        }
+
+        function submitcommentBtn(replyEachUsername,boardNum, replyNum) {
+            let submitContent = $(`#edit_comment_textarea_${replyNum}`).val();
+            if(!isValidContents(submitContent)){
+                return ;
+            }
+            let data = { 'boardNum':boardNum ,'replyNum' : replyNum , 'username' : replyEachUsername, 'replyContent' : submitContent}
+            putReply(data);
+        }
+
+        function putReply(data){
+            $.ajax({ // $.ajax = jQeury 를 이용하겠다.
+                type: "POST",
+                url: `/api/replies/${data.boardNum}/${data.replyNum}`,
+                contentType: "application/json", // JSON 형식으로 전달함을 알리기
+                data: JSON.stringify(data), //웹에서 주고 받을 때 스트링으로만 주고 받기 때문에 문자열로 바꿔서 전달함
+                success: function (response) {
+                    alert('메시지가 성공적으로 수정되었습니다.');
+                    reloadContainerView();
+                    // window.location.reload();
+                }
+            });
+        }
+
+
+        function deletecommentBtn(replyEachUsername,boardNum, replyNum) {
+            if (confirm("정말 삭제하시겠습니까??") == true){    //확인
+            }else{   //취소
+                return ;
+            }
+            let data = { 'boardNum':boardNum ,'replyNum' : replyNum , 'username' : replyEachUsername, 'replyContent' : ""}
+            deleteReply(data);
+        }
+
+        function deleteReply(data){
+            $.ajax({ // $.ajax = jQeury 를 이용하겠다.
+                type: "DELETE",
+                url: `/api/replies/${data.boardNum}/${data.replyNum}`,
+                contentType: "application/json", // JSON 형식으로 전달함을 알리기
+                data: JSON.stringify(data), //웹에서 주고 받을 때 스트링으로만 주고 받기 때문에 문자열로 바꿔서 전달함
+                success: function (response) {
+                    if(response != null) {
+                    alert('댓글이 삭제되었습니다.');
+                    reloadContainerView();
+                    }
+                    else {
+                        alert('댓글 삭제를 실패했습니다.')
+                    }
+                    // window.location.reload();
+                }
+            });
+        }
+
+        function reloadContainerView(){
+            $('#container_view').removeClass('active');
+            $('#container_view_warp').empty();
+            enter_board_view(memory);
+        }
+
+    </script>
+
+</head>
+
+<body style="background-color:black">
+<div class="indexOf">
+
+
+    <div class="title_h1">
+        <h1> <b>자유게시판</b> </h1>
+    </div>
+
+    <div th:if="${userLoginCheck}" style="color: white; font-size: 20pt; text-align:right;">
+        <span th:text="${username}"></span> 님 안녕하세요.
+    </div>
+
+    <div class="button_wrapper">
+
+        <div th:if="${userLoginCheck}" class="login_button">
+            <button type="button"  onclick="location.href='/user/logout'" class="btn btn-secondary">로그아웃</button>
+        </div>
+        <div th:unless="${userLoginCheck}" class="write_button">
+            <button type="button"  onclick="location.href='/user/signup'" class="btn btn-secondary">회원가입</button>
+            <button type="button"  onclick="location.href='/user/login'" class="btn btn-secondary" style="margin-left: 15px;">로그인</button>
+        </div>
+
+        <div th:if="${userLoginCheck}" class="write_button">
+            <button type="button"  onclick="enter_board_write()" class="btn btn-secondary">글 쓰기</button>
+        </div>
+    </div>
+
+
+    <table class="table table-dark table-hover">
+        <thead class="tablehead">
+        <tr style="color: indianred">
+            <th scope="col">번호</th>
+            <th scope="col" colspan="3">글 제목</th>
+            <th scope="col">작성자</th>
+            <th scope="col">작성일</th>
+        </tr>
+        </thead>
+        <tbody id="tableBody">
+
+        </tbody>
+    </table>
+
+    <div th:if="${userLoginCheck != null}" id="container_write" class="popup-container_write">
+        <div class="popup_write">
+            <button id="close_write" class="close_write">
+                X
+            </button>
+            <h1>
+                <b>
+                    🖋글 쓰기 페이지
+                </b>
+            </h1>
+            <p>하고 싶은 말을 짧게 써주세요.</p>
+            <div>
+                <p>
+                    <b>글 제목</b>
+                </p>
+                <div class="form-floating">
+                    <textarea class="form-control" placeholder=" " id="mytitle"
+                              style="width: 25rem; height: 100px; margin-bottom: 10px;"></textarea>
+                    <label >글 제목</label>
+                </div>
+            </div>
+            <div>
+                <p>
+                    <b>내용</b>
+                </p>
+                <div class="form-floating">
+                    <textarea class="form-control" placeholder=" " id="mycontent"
+                              style="width: 25rem; height: 100px; margin-bottom: 10px;"></textarea>
+                    <label >내용</label>
+                </div>
+            </div>
+            <p>
+            </p>
+            <button class="cta_write" onclick="postWriting()">글 등록하기</button>
+        </div>
+    </div>
+
+    <div id="container_view_warp">
+
+    </div>
+</div>
+
+</body>
+</html>
+
+

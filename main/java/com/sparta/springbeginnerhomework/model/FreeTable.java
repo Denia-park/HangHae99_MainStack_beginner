@@ -1,5 +1,8 @@
-package com.sparta.springbeginnerhomework.models;
+package com.sparta.springbeginnerhomework.model;
 
+import com.sparta.springbeginnerhomework.dto.FreeTableRequestDto;
+import com.sparta.springbeginnerhomework.modelInterface.Timestamped;
+import com.sparta.springbeginnerhomework.security.UserDetailsImpl;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -17,17 +20,14 @@ public class FreeTable extends Timestamped {
     private String title;
 
     @Column(nullable = false)
-    private String writer;
+    private String username;
 
     @Column(nullable = false)
     private String content;
 
-    public FreeTable(FreeTableRequestDto requestDto){
+    public FreeTable(FreeTableRequestDto requestDto, UserDetailsImpl userDetails) {
         this.title = requestDto.getTitle();
-        this.writer = requestDto.getWriter();
+        this.username = userDetails.getUsername();
         this.content = requestDto.getContent();
     }
-
-
-
 }

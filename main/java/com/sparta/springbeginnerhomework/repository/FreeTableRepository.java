@@ -1,5 +1,6 @@
-package com.sparta.springbeginnerhomework.models;
+package com.sparta.springbeginnerhomework.repository;
 
+import com.sparta.springbeginnerhomework.model.FreeTable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
